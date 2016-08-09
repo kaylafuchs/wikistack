@@ -4,6 +4,7 @@ var bodyParser = require('body-parser');
 var morgan = require('morgan');
 var wikiRouter = require('./routes/wiki');
 var usersRouter = require('./routes/users');
+var searchRouter = require('./routes/search');
 var swig = require('swig');
 var path = require('path');
 var models = require('./models');
@@ -26,6 +27,7 @@ app.use(bodyParser.json());
 app.use(morgan());
 app.use('/wiki', wikiRouter);
 app.use('/users', usersRouter);
+app.use('/search', searchRouter);
 
 models.User.sync()
 .then(function () {

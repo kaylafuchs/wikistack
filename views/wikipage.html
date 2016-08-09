@@ -3,7 +3,11 @@
 {% block content %}
   <h3>{{page.title}} <small> (<a href="PLACEHOLDER_URL_TITLE/similar">Similar</a>)</small></h3>
   <h4>by <a href="/users/{{page.authorId}}">{{page.author.name}}</a></h4>
-  <div>{{page.tags}}</div>
+
+  {% for tag in page.tags %}
+  <div class="tag"><a href="tag/{{tag}}">{{tag}}</div></li>
+  {% endfor %}
+
   <hr/>
   <div class="page-body">{{page.content}}</div>
   <hr/>

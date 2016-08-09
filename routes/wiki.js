@@ -36,7 +36,8 @@ router.post('/', function(req, res, next) {
   	var page = Page.build({
 	  	title: req.body.title,
 	  	content: req.body.pageContent,
-		status: req.body.pageStatus || null
+		status: req.body.pageStatus || null,
+		tags: req.body.pageTags.split(' ')
 
 	});
 
@@ -56,9 +57,36 @@ router.get('/add', function(req, res, next) {
   res.render('addpage');
 });
 
+router.get('/search',function(req,res,next){
+	var query = req.query.searchQuery
+	query = query.split("+");
+
+	function searchByQuery(query){
+		return query.map(function(tag){
+			return Page.findAll({
+				where: {
+					tags: {
+						$contains: tag
+					}
+				}
+			})
+		})
+	}
+
+	var searched = searchByQuery(query);
+	console.log(searched);
+
+
+	Promise.all(searched)
+	.then(function(pages){
+		res.render('searchresult', {tags: query, pages: pages})
+	})
+
+})
 
 
 router.get('/:urlTitle',function(req,res,next){
+	console.log("url");
 	Page.findOne({
 	    where: {
 	        urlTitle: req.params.urlTitle
@@ -80,5 +108,30 @@ router.get('/:urlTitle',function(req,res,next){
 	})
 	.catch(next);
 })
+
+router.get('/tag/:tag',function(req,res,next){
+	var tag = req.params.tag
+
+	Page.findAll({
+		where: {
+			tags: {
+				$contains: [tag]
+			}
+	}
+			
+	}).then(function(pages){
+		console.log(pages);
+		if (pages === null) {
+		    res.status(404).send();
+		} else {
+		    res.render('tagpage', {
+		        pages: pages,
+		        tag: tag
+		    });
+		}
+	}).catch(next);
+})
+
+
 
 
